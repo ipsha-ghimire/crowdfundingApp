@@ -1,5 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap");
-
+/* @import url("https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap"); */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,7 +6,8 @@
 .linear-gradient {
   background: linear-gradient(
     179.14deg,
-    rgba(32, 18, 63, 0) -7.14%,
+
+    rgba(61, 11, 167, 0) -7.14%,
     #000000 87.01%
   );
 }
