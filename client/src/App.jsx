@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { Campaigndetails, CreateCampaign, Profile, Home } from './pages';
+import { CampaignDetails, CreateCampaign, Profile, Home } from './pages';
 import { Sidebar, Navbar } from './components';
 
 const App = () => {
@@ -13,10 +13,13 @@ const App = () => {
 
             </div>
             <div className="flex-1 max-sm:w-full max-w-[1280px] mx-auto sm:pr-5">
-                <Navbar /> 
+                <Navbar />
 
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/create-campaign" element={<CreateCampaign />} />
+                    <Route path="/campaign-details/:id" element={<CampaignDetails />} />
                 </Routes>
             </div>
             <p className="font-bold">hellopp</p>
