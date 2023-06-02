@@ -4,6 +4,30 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/dist/output.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+  content: [
+  "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+
+      fontFamily: {
+        epilogue: ['Epilogue', 'sans-serif'],
+      },
+
+      boxShadow: {
+        secondary: '10px 10px 20px rgba(2, 2, 2, 0.25)',
+      },
+    },
+  },
+  plugins: [],
+}
+
+    </script>
     <title>vite-javascript-starter</title>
   </head>
   <body>
