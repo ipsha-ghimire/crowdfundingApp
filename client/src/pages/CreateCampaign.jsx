@@ -19,9 +19,24 @@ const navigate= useNavigate();
     });
    
 
-    const handleSubmit=()=>{
 
+    const handleSubmit=(e)=>{
+  e.preventDefault();
+  console.log(form);
     }
+    const handleFormFieldChange=(fieldName,e)=>{
+      let value = e.target.value;
+
+      if (fieldName === "target") {
+        value = parseFloat(value); // Convert the value to a floating-point number
+    
+        if (isNaN(value) || value < 0) {
+          value = ""; // Reset the value to an empty string if it's not a positive number
+        }
+      }
+ setForm({...form,[fieldName]:value})
+    }
+    
   return (
     <div className="bg-[#E8F3D6] flex justify-center items-center flex-col rounded-[10px] sm:p-10 p-4">
        {isLoading && 'loader...'}
@@ -36,14 +51,14 @@ const navigate= useNavigate();
            placeholder="John Doe"
            inputType="text"
            value={form.name}
-           handleChange={()=>{}}
+           handleChange={(e)=>handleFormFieldChange('name',e)}
           />
           <FormField
             labelName="Campaign Title *"
             placeholder="Write a title"  
             inputType="text"
             value={form.title}
-            handleChange={()=>{}}
+            handleChange={(e)=>{handleFormFieldChange('title',e)}}
           />
         </div>
          
@@ -52,23 +67,23 @@ const navigate= useNavigate();
             placeholder="Write your story"
             isTextArea
             value={form.description}
-            handleChange={()=>{}}
+            handleChange={(e)=>{handleFormFieldChange('description',e)}}
           />
 
         <div className="flex flex-wrap gap-[40px]">
           <FormField 
             labelName="Goal *"
             placeholder="ETH 0.50"
-            inputType="text"
+            inputType="number"
             value={form.target}
-            handleChange={()=>{}}
+            handleChange={(e)=>{handleFormFieldChange('target',e)}}
           />
           <FormField 
             labelName="End Date *"
             placeholder="End Date"
             inputType="date"
             value={form.deadline}
-            handleChange={()=>{}}
+            handleChange={(e)=>{handleFormFieldChange('deadline',e)}}
           />
         </div>
 
@@ -77,8 +92,9 @@ const navigate= useNavigate();
             placeholder="Place image URL of your campaign"
             inputType="url"
             value={form.image}
-            handleChange={()=>{}}
+            handleChange={(e)=>{handleFormFieldChange('image',e)}}
           />
+
 
           <div className="flex justify-center items-center mt-[40px]">
             <CustomButton 
