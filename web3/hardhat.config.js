@@ -5,11 +5,11 @@ module.exports = {
   zksolc: {
     version: "1.3.9",
     compilerSource: "binary",
-    defaultNetwork:'goerli',
+    defaultNetwork:'sepolia',
     networks:{
 hardhat:{},
-georli:{
-   url:'https://rpc.ankr.com/eth_goerli',
+sepolia:{
+   url:'https://rpc.ankr.com/eth_sepolia',
    accounts:[`0x${process.env.PRIVATE_KEY}`],
 }
     },

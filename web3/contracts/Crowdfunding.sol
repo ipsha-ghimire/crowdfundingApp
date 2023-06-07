@@ -1,83 +1,69 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-contract Crowdfunding {
-
-struct Request{
-    string description;
-    address payable recipient; //pay garna 
-    uint value;
-    bool completed;
-    uint noOfVoters;
-    mapping(address=>bool) voters; //voters pugyo ya pugena
-}
-
-mapping (address=>uint) public contributors;
-mapping(uint=>Request) public requests;
-uint public numRequests;
-address public manager;
-uint public minimunContributions; //min contribution amt
-uint public deadline;
-uint public target;
-uint public raisedAmount;
-uint public noOfContributors; //kati jana
-//this is for campaing creation descrription ,name not given yet can be added later
-constructor(uint _target,uint _deadline){
-    target = _target;
-    deadline = block.timestamp+_deadline;
-    minimunContributions= 10 wei;
-    manager = msg.sender; // address of the person who does transaction
-
-
-}
-modifier onlyManager(){
-    require(msg.sender==manager,"you are not manager");
-    _;
-    
-}
-function createRequests(string calldata  _description,address payable  _recipient,uint _value) public onlyManager{
-    Request storage newRequest = requests[numRequests];
-    numRequests++;
-    newRequest.description=_description;
-    newRequest.recipient=_recipient;
-    newRequest.value=_value;
-    newRequest.completed=false;
-    newRequest.noOfVoters=0;   
-}
-function contribution() public payable{
-    require(block.timestamp<deadline,"Deadline has passed");
-    require(msg.value>=minimunContributions,"Minimum contribution requied is 10 wei");
-    if(contributors[msg.sender]==0){
-        noOfContributors++;
+contract CrowdFunding {
+    struct Campaign {
+        address owner;
+        string title;
+        string description;
+        uint256 target;
+        uint256 deadline;
+        uint256 amountCollected;
+        string image;
+        address[] donators;
+        uint256[] donations;
     }
-    contributors[msg.sender]+=msg.value;
-    raisedAmount+=msg.value;
-}
 
-function getContractBalance() public view returns(uint){
-return address(this).balance;
-}
+    mapping(uint256 => Campaign) public campaigns;
 
-function refund() public {
-    require(block.timestamp>deadline && raisedAmount<target,"You are not eligible for a refund");
-    require(contributors[msg.sender]>0,"you are not a contributor");
-    payable(msg.sender).transfer(contributors[msg.sender]);
-    contributors[msg.sender]=0;
-}
+    uint256 public numberOfCampaigns = 0;
 
-function voteRequest(uint _requestNo) public {
-    require(contributors[msg.sender]>0,"you are not a contributor");
-    Request storage thisRequest= requests[_requestNo];
-    require(thisRequest.voters[msg.sender]==false,"you have already voted");
-    thisRequest.voters[msg.sender]= true;
-    thisRequest.noOfVoters++;
-}
+    function createCampaign(address _owner, string memory _title, string memory _description, uint256 _target, uint256 _deadline, string memory _image) public returns (uint256) {
+        Campaign storage campaign = campaigns[numberOfCampaigns];
 
-function makePayment(uint _requestNo) public onlyManager{   //manager who is campagin creater directs this money to recipient
-    require(raisedAmount>=target,"Target is not reached");
-    Request storage thisRequest= requests[_requestNo];
-    require(thisRequest.completed==false,"This request has been completed");
-    require(thisRequest.noOfVoters>noOfContributors/2,"Majority does not support the request");
-    thisRequest.recipient.transfer(thisRequest.value);
-    thisRequest.completed=true;
-}}
+        require(campaign.deadline < block.timestamp, "The deadline should be a date in the future.");
+
+        campaign.owner = _owner;
+        campaign.title = _title;
+        campaign.description = _description;
+        campaign.target = _target;
+        campaign.deadline = _deadline;
+        campaign.amountCollected = 0;
+        campaign.image = _image;
+
+        numberOfCampaigns++;
+
+        return numberOfCampaigns - 1;
+    }
+
+    function donateToCampaign(uint256 _id) public payable {
+        uint256 amount = msg.value;
+
+        Campaign storage campaign = campaigns[_id];
+
+        campaign.donators.push(msg.sender);
+        campaign.donations.push(amount);
+
+        (bool sent,) = payable(campaign.owner).call{value: amount}("");
+
+        if(sent) {
+            campaign.amountCollected = campaign.amountCollected + amount;
+        }
+    }
+
+    function getDonators(uint256 _id) view public returns (address[] memory, uint256[] memory) {
+        return (campaigns[_id].donators, campaigns[_id].donations);
+    }
+
+    function getCampaigns() public view returns (Campaign[] memory) {
+        Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
+
+        for(uint i = 0; i < numberOfCampaigns; i++) {
+            Campaign storage item = campaigns[i];
+
+            allCampaigns[i] = item;
+        }
+
+        return allCampaigns;
+    }
+}
