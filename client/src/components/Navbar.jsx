@@ -3,12 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CustomButton } from './';
 import { logo, menu, search, thirdweb } from '../assets';
 import { navlinks } from '../constants';
+import { useStateContext } from '../context';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState('dashboard');
   const [toggleDrawer, setToggleDrawer] = useState(false);
-  const address = '0x3c..'
+  const address = ''
 
 
   return (
@@ -25,7 +26,7 @@ const Navbar = () => {
         <CustomButton 
           btnType="button"
           title={address ? 'Create a campaign' : 'Connect'}
-          styles={address ? 'bg-[#1dc071]' : 'bg-[#8c6dfd]'}
+          styles={address ? 'bg-[#1dc071]' : 'bg-[#1dc071]'}
           handleClick={() => {
             if(address) navigate('create-campaign')
             else connect()
