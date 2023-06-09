@@ -11,7 +11,9 @@
     #000000 87.01%
   );
 }
-
+.background{
+  background-color: azure;
+}
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   filter: invert(0.8);

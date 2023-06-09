@@ -1,15 +1,12 @@
 import React from 'react'
 
-const CustomButton = ({ btnType, title, handleClick, styles }) => {
+const CountBox = ({ title, value }) => {
   return (
-    <button
-      type={btnType}
-      className={`font-epilogue font-semibold text-[16px] leading-[26px] text-white min-h-[52px] px-4 rounded-[10px] ${styles}`}
-      onClick={handleClick}
-    >
-      {title}
-    </button>
+    <div className="flex flex-col items-center w-[150px]">
+      <h4 className="font-epilogue font-bold text-[30px] text-[#525050]  p-3 bg-[#F3F1F1] rounded-t-[10px] w-full text-center truncate">{value}</h4>
+      <p className="font-epilogue font-normal text-[16px] text-[#808191] bg-[#F3F1F1] px-3 py-2 w-full rouned-b-[10px] text-center">{title}</p>
+    </div>
   )
 }
 
-export default CustomButton
+export default CountBox
