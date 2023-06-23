@@ -11,11 +11,10 @@ const CampaignDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { donate, getDonations, contract, address } = useStateContext();
-
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState('');
   const [donators, setDonators] = useState([]);
-
+  const [isClosed] = useState(state.closed);
   const remainingDays = daysLeft(state.deadline);
 
   const fetchDonators = async () => {
@@ -29,6 +28,10 @@ const CampaignDetails = () => {
   }, [contract, address])
 
   const handleDonate = async () => {
+    if (isClosed) {
+      return; // Exit the function if the campaign is closed
+      setIsLoading(false);
+    }
     setIsLoading(true);
 
     await donate(state.pId, amount); 
@@ -96,6 +99,7 @@ const CampaignDetails = () => {
           </div>
         </div>
 
+
         <div className="flex-1">
           <h4 className="font-epilogue font-semibold text-[18px] text-black uppercase">Fund</h4>   
 
@@ -111,6 +115,7 @@ const CampaignDetails = () => {
                 className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-black text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
+                disabled={isClosed}
               />
 
               <div className="my-[20px] p-4 bg-[#DCD6D6] rounded-[10px]">
@@ -120,13 +125,15 @@ const CampaignDetails = () => {
 
               <CustomButton 
                 btnType="button"
-                title="Fund Campaign"
-                styles="w-full bg-[#1dc071]"
+                title={isClosed ? 'Campaign Closed' : 'Fund Campaign'}
+                styles={`w-full bg-[#1dc071] ${isClosed ? 'opacity-50 cursor-not-allowed' : ''}`}
                 handleClick={handleDonate}
+                disabled={isClosed}
               />
             </div>
           </div>
         </div>
+        {/* fund to campaign ends here */}
       </div>
     </div>
   )

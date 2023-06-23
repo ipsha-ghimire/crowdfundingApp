@@ -1,0 +1,107 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.9;
+
+contract CrowdFunding {
+    struct Campaign {
+        address owner;
+        string title;
+        string description;
+        uint256 target;
+        uint256 deadline;
+        uint256 amountCollected;
+        string image;
+        bool closed; // Flag to track if campaign is closed
+    }
+
+    mapping(uint256 => Campaign) public campaigns;
+    mapping(uint256 => mapping(address => uint256)) public campaignContributions;
+    uint256 public numberOfCampaigns = 0;
+
+    function createCampaign(address _owner, string memory _title, string memory _description, uint256 _target, uint256 _deadline, string memory _image) public returns (uint256) {
+       
+  
+        Campaign storage campaign = campaigns[numberOfCampaigns];
+        require(_deadline < block.timestamp, "The deadline should be a date in the future.");
+        campaign.owner = _owner;
+        campaign.title = _title;
+        campaign.description = _description;
+        campaign.target = _target;
+        campaign.deadline =  block.timestamp + _deadline;
+        campaign.amountCollected = 0;
+        campaign.image = _image;
+        campaign.closed = false;
+        numberOfCampaigns++;
+      
+        return numberOfCampaigns - 1;
+    }
+
+    function donateToCampaign(uint256 _id) public payable {
+        Campaign storage campaign = campaigns[_id];
+
+        require(!campaign.closed, "The campaign is closed.");
+        require(block.timestamp < campaign.deadline, "Campaign deadline has passed.");
+
+        uint256 amount = msg.value;
+
+        campaignContributions[_id][msg.sender] += amount;
+        campaign.amountCollected += amount;
+
+        if (campaign.amountCollected >= campaign.target) {
+            campaign.closed = true;
+            (bool sent,) = payable(campaign.owner).call{value: campaign.amountCollected}("");
+            require(sent, "Transfer to campaign owner failed.");
+        }
+    }
+
+    // function requestRefund(uint256 _id) public {
+    // Campaign storage campaign = campaigns[_id];
+
+    // require(campaign.closed, "The campaign is still ongoing.");
+    // require(campaign.amountCollected < campaign.target, "The campaign was successful.");
+
+    // uint256 contribution = campaignContributions[_id][msg.sender];
+    // require(contribution > 0, "You have not contributed to this campaign.");
+
+    // campaignContributions[_id][msg.sender] = 0;
+    // campaign.amountCollected -= contribution;
+
+    // (bool sent,)=payable(msg.sender).call{value: contribution}("");
+    // require(sent, "Refund failed.");
+    // }
+
+    function requestRefund(uint256 _id) public {
+    Campaign storage campaign = campaigns[_id];
+    require(campaign.amountCollected < campaign.target, "The campaign was successful.");
+    require(block.timestamp > campaign.deadline, "Campaign is still ongoing.");
+    uint256 contribution = campaignContributions[_id][msg.sender];
+    require(contribution > 0, "You have not contributed to this campaign.");
+
+    campaignContributions[_id][msg.sender] = 0;
+    campaign.amountCollected -= contribution;
+
+    (bool sent,) = payable(msg.sender).call{value: contribution}("");
+    require(sent, "Refund failed.");
+}
+
+
+    function getCampaigns() public view returns (Campaign[] memory) {
+        Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
+
+        for (uint256 i = 0; i < numberOfCampaigns; i++) {
+            Campaign storage item = campaigns[i];
+
+            allCampaigns[i] = Campaign({
+                owner: item.owner,
+                title: item.title,
+                description: item.description,
+                target: item.target,
+                deadline: item.deadline,
+                amountCollected: item.amountCollected,
+                image: item.image,
+                closed: item.closed
+            });
+        }
+
+        return allCampaigns;
+    }
+}
