@@ -56,6 +56,8 @@ export const StateContextProvider = ({ children }) => {
     return filteredCampaigns;
   }
 
+
+
   const donate = async (pId, amount) => {
     const data = await contract.call('donateToCampaign', pId, { value: ethers.utils.parseEther(amount)});
 
@@ -81,6 +83,19 @@ export const StateContextProvider = ({ children }) => {
     return parsedDonations;
   }
 
+  const getActiveCampaigns = async () => {
+    const allCampaigns = await getCampaigns();
+
+    const currentTime = (Date.now() / 1000); // Get the current time in seconds
+
+    const activeCampaigns = allCampaigns.filter(
+      (campaign) => campaign.deadline > currentTime && parseFloat(campaign.amountCollected) < parseFloat(campaign.target)
+    );
+
+    return activeCampaigns;
+  };
+
+
 
   return (
     <StateContext.Provider
@@ -92,7 +107,8 @@ export const StateContextProvider = ({ children }) => {
         getCampaigns,
         getUserCampaigns,
         donate,
-        getDonations
+        getDonations,
+        getActiveCampaigns
       }}
     >
       {children}
