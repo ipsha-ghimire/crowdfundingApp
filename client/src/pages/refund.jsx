@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
-import { DisplayCampaigns } from '../components';
-import { useStateContext } from '../context'
-
+import { DisplayRefund } from '../components';
+import { useStateContext } from '../context';
 const Refund = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
@@ -21,8 +20,8 @@ const Refund = () => {
   }, [address, contract]);
 
   return (
-    <DisplayCampaigns 
-      title="All Campaigns"
+    <DisplayRefund
+      title="Refundable Campaigns"
       isLoading={isLoading}
       campaigns={campaigns}
     />
