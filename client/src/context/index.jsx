@@ -70,9 +70,6 @@ export const StateContextProvider = ({ children }) => {
 
     const parsedDonations = [];
 
-
-
-
     for(let i = 0; i < numberOfDonations; i++) {
       parsedDonations.push({
         donator: donations[0][i],
@@ -85,15 +82,26 @@ export const StateContextProvider = ({ children }) => {
 
   const getActiveCampaigns = async () => {
     const allCampaigns = await getCampaigns();
-
-    const currentTime = (Date.now() / 1000); // Get the current time in seconds
-
-    const activeCampaigns = allCampaigns.filter(
-      (campaign) => campaign.deadline > currentTime && parseFloat(campaign.amountCollected) < parseFloat(campaign.target)
-    );
-
+    const currentTime = Date.now() / 1000; // Get the current time in seconds
+  
+    const activeCampaigns = [];
+  
+    for (const campaign of allCampaigns) {
+      const donations = await getDonations(campaign.pId);
+      const hasDonated = donations.some((donation) => donation.donator === address);
+  
+      if (
+        campaign.deadline > currentTime &&
+        parseFloat(campaign.amountCollected) < parseFloat(campaign.target) &&
+        hasDonated
+      ) {
+        activeCampaigns.push(campaign);
+      }
+    }
+  
     return activeCampaigns;
   };
+  
 
 
 

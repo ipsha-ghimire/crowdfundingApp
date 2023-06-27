@@ -15,6 +15,7 @@ const CampaignDetails = () => {
   const [amount, setAmount] = useState('');
   const [donators, setDonators] = useState([]);
   const [isClosed] = useState(state.closed);
+  const deadlinepassed= useState(state.deadlinePassed);
   const remainingDays = daysLeft(state.deadline);
 
   const fetchDonators = async () => {
@@ -28,13 +29,14 @@ const CampaignDetails = () => {
   }, [contract, address])
 
   const handleDonate = async () => {
-    if (isClosed) {
-      return; // Exit the function if the campaign is closed
+    if (isClosed || deadlinepassed ) {
       setIsLoading(false);
+      return; // Exit the function if the campaign is closed
+    x
     }
     setIsLoading(true);
 
-    await donate(state.pId, amount); 
+    await donate(state.pId,amount); 
 
     navigate('/')
     setIsLoading(false);
@@ -115,7 +117,7 @@ const CampaignDetails = () => {
                 className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-black text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                disabled={isClosed}
+                disabled={isClosed || deadlinepassed  }
               />
 
               <div className="my-[20px] p-4 bg-[#DCD6D6] rounded-[10px]">
@@ -125,10 +127,10 @@ const CampaignDetails = () => {
 
               <CustomButton 
                 btnType="button"
-                title={isClosed ? 'Campaign Closed' : 'Fund Campaign'}
-                styles={`w-full bg-[#1dc071] ${isClosed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                title={isClosed ||deadlinepassed ? 'Campaign Closed' : 'Fund Campaign'}
+                styles={`w-full bg-[#1dc071] ${isClosed || deadlinepassed? 'opacity-50 cursor-not-allowed' : ''}`}
                 handleClick={handleDonate}
-                disabled={isClosed}
+                disabled={isClosed || deadlinepassed }
               />
             </div>
           </div>
@@ -139,4 +141,4 @@ const CampaignDetails = () => {
   )
 }
 
-export default CampaignDetails
+export default CampaignDetails;

@@ -9,7 +9,7 @@ contract CrowdFunding {
         uint256 target;
         uint256 deadline;
         uint256 amountCollected;
-         bool closed;
+        bool closed;
         string image;
         address[] donators;
         uint256[] donations;
@@ -45,9 +45,9 @@ contract CrowdFunding {
         return numberOfCampaigns - 1;
     }
 
-    function donateToCampaign(uint256 _id) public payable {
+   function donateToCampaign(uint256 _id) public payable {
         Campaign storage campaign = campaigns[_id];
-         require(!campaign.closed,"The campaign is disabled");
+        require(!campaign.closed, "The campaign is disabled");
         require(campaign.deadline > block.timestamp, "The deadline has already passed.");
 
         campaign.donators.push(msg.sender);
@@ -56,12 +56,11 @@ contract CrowdFunding {
         campaign.amountCollected += msg.value;
 
         if (campaign.amountCollected >= campaign.target) {
-           
-            (bool sent,) = payable(campaign.owner).call{value: campaign.amountCollected}("");
+            (bool sent, ) = payable(campaign.owner).call{value: campaign.amountCollected}("");
             require(sent, "Transfer to campaign owner failed.");
-                    campaign.closed = true;
-        }
+            campaign.closed = true;
     }
+   }
 
     function claimRefund(uint256 _id) public {
         Campaign storage campaign = campaigns[_id];
