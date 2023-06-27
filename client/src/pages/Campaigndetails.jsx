@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Await, useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 
 import { useStateContext } from '../context';
@@ -8,28 +8,40 @@ import { calculateBarPercentage, daysLeft } from '../utils';
 import { thirdweb } from '../assets';
 
 const CampaignDetails = () => {
+  let status=false;
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { donate, getDonations, contract, address } = useStateContext();
+  const { donate, getDonations, contract, address} = useStateContext();
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState('');
   const [donators, setDonators] = useState([]);
   const [isClosed] = useState(state.closed);
-  const deadlinepassed= useState(state.deadlinePassed);
+
   const remainingDays = daysLeft(state.deadline);
+  if(remainingDays<0){
+  status=true;
+  }else{
+    status=false;
+  }
+  const [deadlinepassed]= useState(status);
 
   const fetchDonators = async () => {
     const data = await getDonations(state.pId);
 
     setDonators(data);
   }
+  
 
   useEffect(() => {
+
     if(contract) fetchDonators();
   }, [contract, address])
 
+  
+
   const handleDonate = async () => {
-    if (isClosed || deadlinepassed ) {
+
+    if (isClosed || deadlinepassed) {
       setIsLoading(false);
       return; // Exit the function if the campaign is closed
     x
@@ -40,6 +52,8 @@ const CampaignDetails = () => {
 
     navigate('/')
     setIsLoading(false);
+
+ 
   }
 
   return (
@@ -118,7 +132,7 @@ const CampaignDetails = () => {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 disabled={isClosed || deadlinepassed  }
-              />
+                />
 
               <div className="my-[20px] p-4 bg-[#DCD6D6] rounded-[10px]">
                 <h4 className="font-epilogue font-semibold text-[14px] leading-[22px] text-black">Back it because you believe in it.</h4>
@@ -130,7 +144,8 @@ const CampaignDetails = () => {
                 title={isClosed ||deadlinepassed ? 'Campaign Closed' : 'Fund Campaign'}
                 styles={`w-full bg-[#1dc071] ${isClosed || deadlinepassed? 'opacity-50 cursor-not-allowed' : ''}`}
                 handleClick={handleDonate}
-                disabled={isClosed || deadlinepassed }
+               disabled={isClosed || deadlinepassed }
+
               />
             </div>
           </div>

@@ -22,7 +22,7 @@ const Refund = () => {
 
   return (
     <DisplayCampaigns 
-      title="All Campaigns"
+      title="Refundable Campaigns"
       isLoading={isLoading}
       campaigns={campaigns}
     />
