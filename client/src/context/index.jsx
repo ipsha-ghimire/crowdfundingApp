@@ -4,6 +4,9 @@ import { useAddress, useContract, useMetamask, useContractWrite } from '@thirdwe
 import { ethers } from 'ethers';
 import { EditionMetadataWithOwnerOutputSchema } from '@thirdweb-dev/sdk';
 
+  // const { contract } = useContract('0x6a01e32E41C91B0C44A2ba91bB7B27ee5851161d');
+
+
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
@@ -59,9 +62,12 @@ export const StateContextProvider = ({ children }) => {
 
 
   const donate = async (pId, amount) => {
-    const data = await contract.call('donateToCampaign', pId, { value: ethers.utils.parseEther(amount)});
+    
 
+    const data = await contract.call('donateToCampaign', pId, { value: ethers.utils.parseEther(amount)});
     return data;
+  
+   
   }
 
   const getDonations = async (pId) => {
@@ -69,9 +75,6 @@ export const StateContextProvider = ({ children }) => {
     const numberOfDonations = donations[0].length;
 
     const parsedDonations = [];
-
-
-
 
     for(let i = 0; i < numberOfDonations; i++) {
       parsedDonations.push({
@@ -85,15 +88,28 @@ export const StateContextProvider = ({ children }) => {
 
   const getActiveCampaigns = async () => {
     const allCampaigns = await getCampaigns();
-
-    const currentTime = (Date.now() / 1000); // Get the current time in seconds
-
-    const activeCampaigns = allCampaigns.filter(
-      (campaign) => campaign.deadline > currentTime && parseFloat(campaign.amountCollected) < parseFloat(campaign.target)
-    );
-
+    const currentTime = Date.now() / 1000; // Get the current time in seconds
+  
+    const activeCampaigns = [];
+  
+    for (const campaign of allCampaigns) {
+      const donations = await getDonations(campaign.pId);
+      const hasDonated = donations.some((donation) => donation.donator === address);
+  
+      if (
+        campaign.deadline > currentTime &&
+        parseFloat(campaign.amountCollected) < parseFloat(campaign.target) &&
+        hasDonated
+      ) {
+        activeCampaigns.push(campaign);
+      }
+    }
+  
     return activeCampaigns;
   };
+  
+
+
 
 
 

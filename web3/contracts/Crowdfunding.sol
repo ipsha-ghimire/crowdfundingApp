@@ -9,7 +9,7 @@ contract CrowdFunding {
         uint256 target;
         uint256 deadline;
         uint256 amountCollected;
-         bool closed;
+        bool closed;
         string image;
         address[] donators;
         uint256[] donations;
@@ -47,7 +47,7 @@ contract CrowdFunding {
 
     function donateToCampaign(uint256 _id) public payable {
         Campaign storage campaign = campaigns[_id];
-         require(!campaign.closed,"The campaign is disabled");
+        require(!campaign.closed,"The campaign is disabled");
         require(campaign.deadline > block.timestamp, "The deadline has already passed.");
 
         campaign.donators.push(msg.sender);
@@ -59,6 +59,8 @@ contract CrowdFunding {
            
             (bool sent,) = payable(campaign.owner).call{value: campaign.amountCollected}("");
             require(sent, "Transfer to campaign owner failed.");
+            if(campaign.amountCollected >= campaign.target)
+                  
                     campaign.closed = true;
         }
     }
