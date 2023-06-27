@@ -3,6 +3,7 @@ import React, { useContext, createContext } from 'react';
 import { useAddress, useContract, useMetamask, useContractWrite } from '@thirdweb-dev/react';
 import { ethers } from 'ethers';
 import { EditionMetadataWithOwnerOutputSchema } from '@thirdweb-dev/sdk';
+import {  daysLeft } from '../utils';
 
   // const { contract } = useContract('0x6a01e32E41C91B0C44A2ba91bB7B27ee5851161d');
 
@@ -51,6 +52,8 @@ export const StateContextProvider = ({ children }) => {
     return parsedCampaings;
   }
 
+  
+
   const getUserCampaigns = async () => {
     const allCampaigns = await getCampaigns();
 
@@ -86,26 +89,38 @@ export const StateContextProvider = ({ children }) => {
     return parsedDonations;
   }
 
+ 
+ 
+ 
+ 
   const getActiveCampaigns = async () => {
+  
     const allCampaigns = await getCampaigns();
-    const currentTime = Date.now() / 1000; // Get the current time in seconds
+    // const currentTime = Date.now()/1000; // Get the current time in seconds
+    
   
     const activeCampaigns = [];
   
     for (const campaign of allCampaigns) {
       const donations = await getDonations(campaign.pId);
       const hasDonated = donations.some((donation) => donation.donator === address);
+      const remainingDays = daysLeft(campaign.deadline);
   
       if (
-        campaign.deadline > currentTime &&
+        (remainingDays<0) &&
         parseFloat(campaign.amountCollected) < parseFloat(campaign.target) &&
         hasDonated
       ) {
+
         activeCampaigns.push(campaign);
+        
       }
+
+
     }
   
     return activeCampaigns;
+
   };
   
 
