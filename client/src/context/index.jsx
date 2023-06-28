@@ -73,6 +73,13 @@ export const StateContextProvider = ({ children }) => {
    
   }
 
+  const refund = async(pId) =>{
+   
+
+    const data = await contract.call("claimRefund", [pId])
+    return data;
+  }
+
   const getDonations = async (pId) => {
     const donations = await contract.call('getDonators', pId);
     const numberOfDonations = donations[0].length;
@@ -139,7 +146,7 @@ export const StateContextProvider = ({ children }) => {
         getUserCampaigns,
         donate,
         getDonations,
-        getActiveCampaigns
+        getActiveCampaigns,refund
       }}
     >
       {children}

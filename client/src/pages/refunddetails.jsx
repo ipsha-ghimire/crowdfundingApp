@@ -9,7 +9,7 @@ import { thirdweb } from '../assets';
 const RefundDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { donate, getDonations, contract, address } = useStateContext();
+  const { donate, getDonations, contract, address,refund } = useStateContext();
 
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState('');
@@ -29,8 +29,13 @@ const RefundDetails = () => {
 
   const handlerefund= async () => {
     setIsLoading(true);
+    await refund(state.pId);
+     return(state.deadline)
+
+
 
     navigate('/withdraw');
+    
     setIsLoading(false);
   }
 
