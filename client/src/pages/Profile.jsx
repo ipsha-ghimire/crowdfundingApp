@@ -25,7 +25,8 @@ const Profile = () => {
       title="All Campaigns"
       isLoading={isLoading}
       campaigns={campaigns}
-    />
+        
+      />
   )
 }
 

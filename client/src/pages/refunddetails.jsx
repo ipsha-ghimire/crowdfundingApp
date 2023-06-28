@@ -1,59 +1,69 @@
 import React, { useState, useEffect } from 'react'
-import { Await, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 
 import { useStateContext } from '../context';
 import { CountBox, CustomButton, Loader } from '../components';
 import { calculateBarPercentage, daysLeft } from '../utils';
 import { thirdweb } from '../assets';
-
-const CampaignDetails = () => {
-  let status=false;
+const RefundDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { donate, getDonations, contract, address} = useStateContext();
+  const { donate, getDonations, contract, address } = useStateContext();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [amount, setAmount] = useState('');
+  
   const [donators, setDonators] = useState([]);
-  const [isClosed] = useState(state.closed);
+  const [donatedAmount, setDonatedAmount] = useState('');
+
+
 
   const remainingDays = daysLeft(state.deadline);
-  if(remainingDays<0){
-  status=true;
-  }else{
-    status=false;
-  }
-  const [deadlinepassed]= useState(status);
 
   const fetchDonators = async () => {
     const data = await getDonations(state.pId);
 
     setDonators(data);
   }
-  
+  // const fetchDonatedAmount = async () => {
+  //   const donations = await getDonations(state.pId);
+  //   const donatedAmount = donations
+  //     .filter((donation) => donation.donator === address)
+  //     .reduce((total, donation) => total + parseFloat(donation.donation), 0);
+  //   setDonatedAmount(donatedAmount);
+  // };
+
+  const fetchDonatedAmount = async () => {
+    const donations = await getDonations(state.pId);
+    console.log(donations); // array
+    console.log(address);
+    const filteredDonations = donations.filter((donation) => donation.donator === address);
+    console.log(filteredDonations);
+
+    const donatedAmount = filteredDonations.reduce((total, donation) => total +parseFloat(donation.donation), 0).toString();
+    console.log(donatedAmount);
+    // const donatedAmountInEther = ethers.utils.formatEther(donatedAmount);
+    const donatedAmountInEther= donatedAmount;
+   const finalethvalue= Number(donatedAmountInEther).toFixed(10);
+   const trimmedValue = String(finalethvalue).replace(/\.?0+$/, '');
+    // console.log("the donated amount in ether is ", donatedAmountInEther);
+    setDonatedAmount(trimmedValue);
+  };
+
+
 
   useEffect(() => {
-
-    if(contract) fetchDonators();
+    if(contract) {
+      fetchDonators();
+    fetchDonatedAmount();
+    }
   }, [contract, address])
 
-  
-
-  const handleDonate = async () => {
-
-    if (isClosed || deadlinepassed) {
-      setIsLoading(false);
-      return; // Exit the function if the campaign is closed
-    x
-    }
+  const handlerefund= async () => {
     setIsLoading(true);
 
-    await donate(state.pId,amount); 
-
-    navigate('/')
+    navigate('/withdraw');
     setIsLoading(false);
-
- 
   }
 
   return (
@@ -87,6 +97,7 @@ const CampaignDetails = () => {
               </div>
               <div>
                 <h4 className="font-epilogue font-semibold text-[14px] text-black break-all">{state.owner}</h4>
+              
               </div>
             </div>
           </div>
@@ -100,7 +111,7 @@ const CampaignDetails = () => {
           </div>
 
           <div>
-            <h4 className="font-epilogue font-semibold text-[18px] text-black uppercase">Donators</h4>
+            <h4 className="font-epilogue font-semibold text-[18px] text-white uppercase">Donators</h4>
 
               <div className="mt-[20px] flex flex-col gap-4">
                 {donators.length > 0 ? donators.map((item, index) => (
@@ -109,15 +120,14 @@ const CampaignDetails = () => {
                     <p className="font-epilogue font-normal text-[16px] text-black leading-[26px] break-ll">{item.donation}</p>
                   </div>
                 )) : (
-                  <p className="font-epilogue font-normal text-[16px] text-[#808191] leading-[26px] text-justify">No donators yet. Be the first one!</p>
+                  <p className="font-epilogue font-normal text-[16px] text-black leading-[26px] text-justify">No donators yet. Be the first one!</p>
                 )}
               </div>
           </div>
         </div>
 
-
         <div className="flex-1">
-          <h4 className="font-epilogue font-semibold text-[18px] text-black uppercase">Fund</h4>   
+          <h4 className="font-epilogue font-semibold text-[18px] text-white uppercase">Fund</h4>   
 
           <div className="mt-[20px] flex flex-col p-4 bg-[#F3F1F1] rounded-[10px]">
             <p className="font-epilogue fount-medium text-[20px] leading-[30px] text-center text-[#808191]">
@@ -126,34 +136,30 @@ const CampaignDetails = () => {
             <div className="mt-[30px]">
               <input 
                 type="number"
-                placeholder="ETH 0.1"
-                step="0.01"
+                readOnly
+                // step="0.01"
                 className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-black text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                disabled={isClosed || deadlinepassed  }
-                />
+                value={donatedAmount}
+                // onChange={(e) => setAmount(e.target.value)}
+              />
 
               <div className="my-[20px] p-4 bg-[#DCD6D6] rounded-[10px]">
-                <h4 className="font-epilogue font-semibold text-[14px] leading-[22px] text-black">Back it because you believe in it.</h4>
-             
+                <h4 className="font-epilogue font-semibold text-[14px] leading-[22px] text-white">Back it because you believe in it.</h4>
+               
               </div>
 
               <CustomButton 
                 btnType="button"
-                title={isClosed ||deadlinepassed ? 'Campaign Closed' : 'Fund Campaign'}
-                styles={`w-full bg-[#1dc071] ${isClosed || deadlinepassed? 'opacity-50 cursor-not-allowed' : ''}`}
-                handleClick={handleDonate}
-               disabled={isClosed || deadlinepassed }
-
+                title="Ask Refund"
+                styles="w-full bg-[#1dc071]"
+                handleClick={handlerefund}
               />
             </div>
           </div>
         </div>
-        {/* fund to campaign ends here */}
       </div>
     </div>
   )
 }
 
-export default CampaignDetails;
+export default RefundDetails;
