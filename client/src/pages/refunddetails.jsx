@@ -33,22 +33,65 @@ const RefundDetails = () => {
   //   setDonatedAmount(donatedAmount);
   // };
 
+  // const fetchDonatedAmount = async () => {
+  //   const donations = await getDonations(state.pId);
+  //   console.log(donations); // array
+  //   console.log(address);
+  //   const filteredDonations = donations.filter((donation) => donation.donator === address);
+  //   console.log(filteredDonations);
+
+  //   const donatedAmount = filteredDonations.reduce((total, donation) => total +parseFloat(donation.donation), 0).toString();
+  //   console.log(donatedAmount);
+  //   // const donatedAmountInEther = ethers.utils.formatEther(donatedAmount);
+  //   const donatedAmountInEther= donatedAmount;
+  //  const finalethvalue= Number(donatedAmountInEther).toFixed(10);
+  //  const trimmedValue = String(finalethvalue).replace(/\.?0+$/, '');
+  //   // console.log("the donated amount in ether is ", donatedAmountInEther);
+  //   setDonatedAmount(trimmedValue);
+  // };
+
+
+
   const fetchDonatedAmount = async () => {
     const donations = await getDonations(state.pId);
     console.log(donations); // array
     console.log(address);
+  
     const filteredDonations = donations.filter((donation) => donation.donator === address);
     console.log(filteredDonations);
-
-    const donatedAmount = filteredDonations.reduce((total, donation) => total +parseFloat(donation.donation), 0).toString();
+  
+    const donationTotals = {};
+  
+    filteredDonations.forEach((donation) => {
+      const id = donation.id;
+      const amount = parseFloat(donation.donation);
+  
+      if (donationTotals[id]) {
+        donationTotals[id] += amount;
+      } else {
+        donationTotals[id] = amount;
+      }
+    });
+  
+    console.log(donationTotals);
+  
+    let donatedAmount = 0;
+  
+    Object.values(donationTotals).forEach((total) => {
+      donatedAmount += total;
+    });
+  
     console.log(donatedAmount);
-    // const donatedAmountInEther = ethers.utils.formatEther(donatedAmount);
-    const donatedAmountInEther= donatedAmount;
-   const finalethvalue= Number(donatedAmountInEther).toFixed(10);
-   const trimmedValue = String(finalethvalue).replace(/\.?0+$/, '');
-    // console.log("the donated amount in ether is ", donatedAmountInEther);
+  
+    const donatedAmountInEther = donatedAmount.toString();
+    const finalethvalue = Number(donatedAmountInEther).toFixed(20);
+    const trimmedValue = String(finalethvalue).replace(/\.?0+$/, '');
+  
+    console.log(trimmedValue);
+  
     setDonatedAmount(trimmedValue);
   };
+  
 
 
 
