@@ -12,8 +12,11 @@ const RefundDetails = () => {
   const { donate, getDonations, contract, address,refund } = useStateContext();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [amount, setAmount] = useState('');
+  
   const [donators, setDonators] = useState([]);
+  const [donatedAmount, setDonatedAmount] = useState('');
+
+
 
   const remainingDays = daysLeft(state.deadline);
 
@@ -22,9 +25,38 @@ const RefundDetails = () => {
 
     setDonators(data);
   }
+  // const fetchDonatedAmount = async () => {
+  //   const donations = await getDonations(state.pId);
+  //   const donatedAmount = donations
+  //     .filter((donation) => donation.donator === address)
+  //     .reduce((total, donation) => total + parseFloat(donation.donation), 0);
+  //   setDonatedAmount(donatedAmount);
+  // };
+
+  const fetchDonatedAmount = async () => {
+    const donations = await getDonations(state.pId);
+    console.log(donations); // array
+    console.log(address);
+    const filteredDonations = donations.filter((donation) => donation.donator === address);
+    console.log(filteredDonations);
+
+    const donatedAmount = filteredDonations.reduce((total, donation) => total +parseFloat(donation.donation), 0).toString();
+    console.log(donatedAmount);
+    // const donatedAmountInEther = ethers.utils.formatEther(donatedAmount);
+    const donatedAmountInEther= donatedAmount;
+   const finalethvalue= Number(donatedAmountInEther).toFixed(10);
+   const trimmedValue = String(finalethvalue).replace(/\.?0+$/, '');
+    // console.log("the donated amount in ether is ", donatedAmountInEther);
+    setDonatedAmount(trimmedValue);
+  };
+
+
 
   useEffect(() => {
-    if(contract) fetchDonators();
+    if(contract) {
+      fetchDonators();
+    fetchDonatedAmount();
+    }
   }, [contract, address])
 
   const handlerefund= async () => {
@@ -109,11 +141,11 @@ const RefundDetails = () => {
             <div className="mt-[30px]">
               <input 
                 type="number"
-                placeholder="ETH 0.1"
-                step="0.01"
+                readOnly
+                // step="0.01"
                 className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-black text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                value={donatedAmount}
+                // onChange={(e) => setAmount(e.target.value)}
               />
 
               <div className="my-[20px] p-4 bg-[#DCD6D6] rounded-[10px]">

@@ -103,8 +103,7 @@ export const StateContextProvider = ({ children }) => {
   const getActiveCampaigns = async () => {
   
     const allCampaigns = await getCampaigns();
-    // const currentTime = Date.now()/1000; // Get the current time in seconds
-    
+
   
     const activeCampaigns = [];
   
@@ -120,7 +119,6 @@ export const StateContextProvider = ({ children }) => {
       ) {
 
         activeCampaigns.push(campaign);
-        
       }
 
 
@@ -130,11 +128,6 @@ export const StateContextProvider = ({ children }) => {
 
   };
   
-
-
-
-
-
   return (
     <StateContext.Provider
       value={{ 
