@@ -11,7 +11,7 @@ import {  daysLeft } from '../utils';
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
-  const { contract } = useContract('0x6a01e32E41C91B0C44A2ba91bB7B27ee5851161d');
+  const { contract } = useContract('0xA8959a0B809BFe10f20a1357a24e9D6627440E92');
   const { mutateAsync: createCampaign } = useContractWrite(contract, 'createCampaign');
 
   const address = useAddress();
@@ -24,7 +24,8 @@ export const StateContextProvider = ({ children }) => {
         form.title, // title
         form.description, // description
         form.target,
-        new Date(form.deadline).getTime(), // deadline,
+        
+        Math.floor(new Date(form.deadline).getTime()/1000), // deadline,
         form.image
       ])
 

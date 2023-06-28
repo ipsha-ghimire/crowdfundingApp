@@ -31,12 +31,12 @@ contract CrowdFunding {
     ) public returns (uint256) {
   
         Campaign storage campaign = campaigns[numberOfCampaigns];
-        require(campaign.deadline < block.timestamp, "The deadline should be a date in the future.");
+        // require(campaign.deadline < block.timestamp, "The deadline should be a date in the future.");
         campaign.owner = _owner;
         campaign.title = _title;
         campaign.description = _description;
         campaign.target = _target;
-         campaign.deadline =   _deadline;
+         campaign.deadline =   _deadline+block.timestamp;
         campaign.amountCollected = 0;
         campaign.image = _image;
 
@@ -45,11 +45,10 @@ contract CrowdFunding {
         return numberOfCampaigns - 1;
     }
 
-   function donateToCampaign(uint256 _id) public payable {
+    function donateToCampaign(uint256 _id) public payable {
         Campaign storage campaign = campaigns[_id];
-
          require(!campaign.closed,"The campaign is disabled");
-        require(campaign.deadline > block.timestamp, "The deadline has already passed.");
+        require(campaign.deadline> block.timestamp, "The deadline has already passed.");
 
         campaign.donators.push(msg.sender);
         campaign.donations.push(msg.value);
@@ -57,21 +56,17 @@ contract CrowdFunding {
         campaign.amountCollected += msg.value;
 
         if (campaign.amountCollected >= campaign.target) {
-            (bool sent, ) = payable(campaign.owner).call{value: campaign.amountCollected}("");
+           
+            (bool sent,) = payable(campaign.owner).call{value: campaign.amountCollected}("");
             require(sent, "Transfer to campaign owner failed.");
-
-
-            if(campaign.amountCollected >= campaign.target)
-                  
                     campaign.closed = true;
         }
-    
-   }
+    }
 
     function claimRefund(uint256 _id) public {
         Campaign storage campaign = campaigns[_id];
 
-        require(campaign.deadline < block.timestamp, "The deadline has not passed yet.");
+        require(campaign.deadline > block.timestamp, "The deadline has not passed yet.");
         require(campaign.amountCollected < campaign.target, "The campaign goal has been reached.");
 
         uint256 amount = donatedAmount[msg.sender];
@@ -100,5 +95,7 @@ contract CrowdFunding {
 
         return allCampaigns;
     }
+
+
 
 }

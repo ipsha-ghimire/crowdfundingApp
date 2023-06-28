@@ -16,6 +16,7 @@ const CampaignDetails = () => {
   const [amount, setAmount] = useState('');
   const [donators, setDonators] = useState([]);
   const [isClosed] = useState(state.closed);
+  
 
   const remainingDays = daysLeft(state.deadline);
   if(remainingDays<0){
@@ -49,6 +50,7 @@ const CampaignDetails = () => {
     setIsLoading(true);
 
     await donate(state.pId,amount); 
+   
 
     navigate('/')
     setIsLoading(false);
