@@ -1,11 +1,11 @@
 export const daysLeft = (deadline) => {
-  const difference = new Date(deadline).getTime() - Date.now();
-  const remainingDays = Math.floor(difference / (1000 * 3600 * 24));
+
+  const deadlineDate = new Date(deadline * 1000); // Convert Unix timestamp to milliseconds
+  const difference = deadlineDate.getTime() - Date.now();
+  const remainingDays =Math.floor(difference / (1000 * 3600 * 24));
 
   return remainingDays.toFixed(0);
 };
-
-
 export const calculateBarPercentage = (goal, raisedAmount) => {
   const percentage = Math.round((raisedAmount * 100) / goal);
 

@@ -10,8 +10,6 @@ const DisplayRefund = ({ title, isLoading, campaigns }) => {
   const handleNavigate = (campaign) => {
     navigate(`/refunddetails/${campaign.title}`, { state: campaign })
   }
-  
-  
   return (
     <div>
       <h1 className="font-epilogue font-semibold text-[18px] text-black text-left">{title} ({campaigns.length})</h1>
@@ -23,7 +21,7 @@ const DisplayRefund = ({ title, isLoading, campaigns }) => {
 
         {!isLoading && campaigns.length === 0 && (
           <p className="font-epilogue font-semibold text-[14px] leading-[30px] text-[#818183]">
-            You have not created any campigns yet
+            You do not have any refundable campaigns
           </p>
         )}
 

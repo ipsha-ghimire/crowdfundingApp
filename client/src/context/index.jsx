@@ -11,7 +11,7 @@ import {  daysLeft } from '../utils';
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
-  const { contract } = useContract('0x6a01e32E41C91B0C44A2ba91bB7B27ee5851161d');
+  const { contract } = useContract('0x4d3CF77f26d15e89857757e32a7A899eF3258d06');
   const { mutateAsync: createCampaign } = useContractWrite(contract, 'createCampaign');
 
   const address = useAddress();
@@ -24,7 +24,8 @@ export const StateContextProvider = ({ children }) => {
         form.title, // title
         form.description, // description
         form.target,
-        new Date(form.deadline).getTime(), // deadline,
+        
+        Math.floor(new Date(form.deadline).getTime()/1000), // deadline,
         form.image
       ])
 
@@ -71,6 +72,13 @@ export const StateContextProvider = ({ children }) => {
     return data;
   
    
+  }
+
+  const refund = async(pId) =>{
+   
+
+    const data = await contract.call("claimRefund", [pId])
+    return data;
   }
 
   const getDonations = async (pId) => {
@@ -132,7 +140,7 @@ export const StateContextProvider = ({ children }) => {
         getUserCampaigns,
         donate,
         getDonations,
-        getActiveCampaigns
+        getActiveCampaigns,refund
       }}
     >
       {children}
