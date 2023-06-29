@@ -8,3 +8,4 @@ export { default as CountBox } from './CountBox';
 export { default as Loader } from './Loader';
 export{ default as  DisplayRefund} from './displayrefund';
 export { default as Pagination} from './pagination';
+export {default as Search} from './search';
