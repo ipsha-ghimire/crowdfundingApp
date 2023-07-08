@@ -6,12 +6,13 @@ import { EditionMetadataWithOwnerOutputSchema } from '@thirdweb-dev/sdk';
 import {  daysLeft } from '../utils';
 
   // const { contract } = useContract('0x6a01e32E41C91B0C44A2ba91bB7B27ee5851161d');
+  // const { contract } = useContract('0x4d3CF77f26d15e89857757e32a7A899eF3258d06');
 
 
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
-  const { contract } = useContract('0x4d3CF77f26d15e89857757e32a7A899eF3258d06');
+  const { contract } = useContract('0x3Bc80E1F52a67245C4987227A77Fe7297F06307B');
   const { mutateAsync: createCampaign } = useContractWrite(contract, 'createCampaign');
 
   const address = useAddress();
@@ -25,7 +26,7 @@ export const StateContextProvider = ({ children }) => {
         form.description, // description
         form.target,
         
-        Math.floor(new Date(form.deadline).getTime()/1000), // deadline,
+     (new Date(form.deadline).getTime()/1000), // deadline,
         form.image
       ])
 
@@ -128,6 +129,15 @@ export const StateContextProvider = ({ children }) => {
     return activeCampaigns;
 
   };
+
+  const getRefundStatus = async (pId) => {
+    const data = await contract.call("getStatus", [pId])
+    return data;
+   
+  }
+
+
+
   
   return (
     <StateContext.Provider
@@ -140,7 +150,7 @@ export const StateContextProvider = ({ children }) => {
         getUserCampaigns,
         donate,
         getDonations,
-        getActiveCampaigns,refund
+        getActiveCampaigns,refund,getRefundStatus
       }}
     >
       {children}
