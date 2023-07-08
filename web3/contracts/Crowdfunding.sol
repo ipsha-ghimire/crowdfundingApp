@@ -15,8 +15,8 @@ contract CrowdFunding {
         uint256[] donations;
       
     }
-      mapping(address => uint256) donatedAmount;
-
+    mapping(address=>mapping(uint256=>uint256)) public donatedAmount;
+    
     mapping(uint256 => Campaign) public campaigns;
 
     uint256 public numberOfCampaigns = 0;
@@ -31,7 +31,7 @@ contract CrowdFunding {
     ) public returns (uint256) {
   
         Campaign storage campaign = campaigns[numberOfCampaigns];
-        // require(campaign.deadline < block.timestamp, "The deadline should be a date in the future.");
+        require(campaign.deadline < block.timestamp, "The deadline should be a date in the future.");
         campaign.owner = _owner;
         campaign.title = _title;
         campaign.description = _description;
@@ -48,11 +48,11 @@ contract CrowdFunding {
     function donateToCampaign(uint256 _id) public payable {
         Campaign storage campaign = campaigns[_id];
          require(!campaign.closed,"The campaign is disabled");
-        require(campaign.deadline> block.timestamp, "The deadline has already passed.");
+        require(campaign.deadline > block.timestamp, "The deadline has already passed.");
 
         campaign.donators.push(msg.sender);
         campaign.donations.push(msg.value);
-        donatedAmount[msg.sender] += msg.value;
+        donatedAmount[msg.sender][_id] += msg.value;
         campaign.amountCollected += msg.value;
 
         if (campaign.amountCollected >= campaign.target) {
@@ -66,14 +66,15 @@ contract CrowdFunding {
     function claimRefund(uint256 _id) public {
         Campaign storage campaign = campaigns[_id];
 
-        require(campaign.deadline > block.timestamp, "The deadline has not passed yet.");
+        require(campaign.deadline < block.timestamp, "The deadline has not passed yet.");
         require(campaign.amountCollected < campaign.target, "The campaign goal has been reached.");
 
-        uint256 amount = donatedAmount[msg.sender];
+        uint256 amount = donatedAmount[msg.sender][_id];
         require(amount > 0, "No refund is available for this address.");
 
-        donatedAmount[msg.sender] = 0;
-        campaign.amountCollected -= amount;
+        donatedAmount[msg.sender][_id] = 0;
+
+        campaign.amountCollected = campaign.amountCollected - amount;
 
         (bool sent, ) = payable(msg.sender).call{value: amount}("");
         require(sent, "Failed to send the refund.");
@@ -96,6 +97,16 @@ contract CrowdFunding {
         return allCampaigns;
     }
 
+function getStatus(uint256 _id) public view returns (bool) {
+    uint256 amount = donatedAmount[msg.sender][_id];
+    
+    if (amount == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 
+    
 }
