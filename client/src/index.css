@@ -43,3 +43,12 @@ color: black;
   background-color : #65dda3;
 }
 
+.inlinedis{
+ display: inline-block;
+}
+
+
+.bor {
+  border: 1px solid rgb(231, 228, 228);
+}
+
