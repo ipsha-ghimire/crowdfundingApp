@@ -15,8 +15,11 @@ const RefundDetails = () => {
 
   const [donators, setDonators] = useState([]);
   const [donatedAmount, setDonatedAmount] = useState('');
-  const remainingDays = daysLeft(state.deadline);
+  let remainingDays = daysLeft(state.deadline);
   const [refundStatus,setRefundStatus]= useState(false);
+  if(remainingDays<0){
+    remainingDays=0;
+    }
 
   const getrefundStatus= async () =>{
   const status = await getRefundStatus(state.pId);
@@ -30,6 +33,7 @@ const RefundDetails = () => {
 
     setDonators(data);
   }
+  
 
 
   const fetchDonatedAmount = async () => {

@@ -18,11 +18,13 @@ const CampaignDetails = () => {
   const [isClosed] = useState(state.closed);
   
 
-  const remainingDays = daysLeft(state.deadline);
+  let remainingDays = daysLeft(state.deadline);
   if(remainingDays<0){
   status=true;
+  remainingDays=0;
   }else{
     status=false;
+   
   }
   const [deadlinepassed]= useState(status);
 

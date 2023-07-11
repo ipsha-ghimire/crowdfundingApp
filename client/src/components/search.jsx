@@ -13,7 +13,7 @@ const[keyword,setkeyword]= useState('');
                 }else{
             navigate('/');   
         }
-    }
+}
     return (
         <form onSubmit={searchHandler} className='inlinedis'>
         
