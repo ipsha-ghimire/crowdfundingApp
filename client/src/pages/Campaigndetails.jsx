@@ -20,6 +20,7 @@ const CampaignDetails = () => {
 
   let remainingDays = daysLeft(state.deadline);
   if(remainingDays<0){
+    
   status=true;
   remainingDays=0;
   }else{
@@ -32,6 +33,7 @@ const CampaignDetails = () => {
     const data = await getDonations(state.pId);
 
     setDonators(data);
+    
   }
   
 

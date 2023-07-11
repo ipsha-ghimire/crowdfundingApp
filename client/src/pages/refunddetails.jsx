@@ -23,8 +23,15 @@ const RefundDetails = () => {
 
   const getrefundStatus= async () =>{
   const status = await getRefundStatus(state.pId);
-  console.log('Refund Status:', status); // Log the value of status
-  setRefundStatus(status);
+  if(status===0){
+    setRefundStatus(true);
+
+  }
+ else{
+  setRefundStatus(false);
+  
+ }
+  
 
 }
 

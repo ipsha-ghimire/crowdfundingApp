@@ -9,7 +9,7 @@ contract CrowdFunding {
         uint256 target;
         uint256 deadline;
         uint256 amountCollected;
-         bool closed;
+        bool closed;
         string image;
         address[] donators;
         uint256[] donations;
@@ -97,16 +97,19 @@ contract CrowdFunding {
         return allCampaigns;
     }
 
-function getStatus(uint256 _id) public view returns (bool) {
+function getStatus(uint256 _id) public view returns (uint256) {
+
     uint256 amount = donatedAmount[msg.sender][_id];
-    
-    if (amount == 0) {
-        return true;
-    } else {
-        return false;
-    }
+    return  amount;
+}
+
+
+function getTotalCampaigns() public view returns (uint) {
+    return numberOfCampaigns;
+  
 }
 
 
     
 }
+
