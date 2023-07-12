@@ -15,23 +15,13 @@ const RefundDetails = () => {
 
   const [donators, setDonators] = useState([]);
   const [donatedAmount, setDonatedAmount] = useState('');
-  let remainingDays = daysLeft(state.deadline);
+  const remainingDays = daysLeft(state.deadline);
   const [refundStatus,setRefundStatus]= useState(false);
-  if(remainingDays<0){
-    remainingDays=0;
-    }
 
   const getrefundStatus= async () =>{
   const status = await getRefundStatus(state.pId);
-  if(status===0){
-    setRefundStatus(true);
-
-  }
- else{
-  setRefundStatus(false);
-  
- }
-  
+  console.log('Refund Status:', status); // Log the value of status
+  setRefundStatus(status);
 
 }
 
@@ -40,7 +30,6 @@ const RefundDetails = () => {
 
     setDonators(data);
   }
-  
 
 
   const fetchDonatedAmount = async () => {
@@ -97,12 +86,18 @@ const RefundDetails = () => {
     if (refundStatus) {
       setIsLoading(false);
       return; // Exit the function if the campaign is closed
-    x
     }
+  
     setIsLoading(true);
-    await refund(state.pId);
-    navigate('/withdraw');
-    setIsLoading(false);
+    try {
+      await refund(state.pId);
+      navigate('/withdraw');
+    } catch (error) {
+      console.error(error);
+      navigate('/home'); // Redirect to the home page in case of an error
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
