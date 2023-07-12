@@ -86,12 +86,18 @@ const RefundDetails = () => {
     if (refundStatus) {
       setIsLoading(false);
       return; // Exit the function if the campaign is closed
-    x
     }
+  
     setIsLoading(true);
-    await refund(state.pId);
-    navigate('/withdraw');
-    setIsLoading(false);
+    try {
+      await refund(state.pId);
+      navigate('/withdraw');
+    } catch (error) {
+      console.error(error);
+      navigate('/home'); // Redirect to the home page in case of an error
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
