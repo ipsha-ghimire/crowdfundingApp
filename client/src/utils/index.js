@@ -1,7 +1,7 @@
 export const daysLeft = (deadline) => {
-  const deadlineDate = new Date(deadline); // Convert Unix timestamp to milliseconds
+  const deadlineDate = new Date(deadline * 1000); // Convert Unix timestamp to milliseconds
   const difference = deadlineDate.getTime() - Date.now();
-  const remainingDays = Math.floor(difference / ( 3600 * 24));
+  const remainingDays = Math.floor(difference / (1000 * 3600 * 24));
 
   if (remainingDays === 0) {
     const remainingHours = Math.floor(difference / (1000 * 3600));
@@ -27,3 +27,4 @@ export const checkIfImage = (url, callback) => {
   img.onload = () => callback(true);
   img.onerror = () => callback(false);
 };
+
