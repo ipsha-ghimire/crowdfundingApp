@@ -26,7 +26,8 @@ export const StateContextProvider = ({ children }) => {
         form.description, // description
         form.target,
         
-     (new Date(form.deadline).getTime()/1000), // deadline,
+        Math.floor((new Date(form.deadline).getTime() - Date.now()) / 1000),
+
         form.image
       ])
 
@@ -131,7 +132,7 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const getRefundStatus = async (pId) => {
-    const data = await contract.call("getStatus", [8988888888888888888777777777])
+    const data = await contract.call("getStatus", [])
  
     console.log("The index.js refund is"+ data);
     return data;
