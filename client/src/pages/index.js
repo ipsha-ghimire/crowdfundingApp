@@ -4,3 +4,5 @@ export { default as CreateCampaign } from './CreateCampaign';
 export {default as CampaignDetails } from './CampaignDetails';
 export{ default as Refund} from './refund';
 export{ default as RefundDetails} from './refunddetails';
+export{ default as  Error} from './Error';
+

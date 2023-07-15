@@ -15,7 +15,13 @@ const RefundDetails = () => {
 
   const [donators, setDonators] = useState([]);
   const [donatedAmount, setDonatedAmount] = useState('');
-  const remainingDays = daysLeft(state.deadline);
+  
+  let remainingDays = daysLeft(state.deadline);
+
+
+  if(remainingDays[0]<0){
+    remainingDays[0]=0;
+    }
   const [refundStatus,setRefundStatus]= useState(false);
 
   const getrefundStatus= async () =>{
@@ -94,7 +100,7 @@ const RefundDetails = () => {
       navigate('/withdraw');
     } catch (error) {
       console.error(error);
-      navigate('/home'); // Redirect to the home page in case of an error
+      navigate('/error'); // Redirect to the error page in case of an error
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +120,7 @@ const RefundDetails = () => {
         </div>
 
         <div className="flex md:w-[150px] w-full flex-wrap justify-between gap-[30px]">
-          <CountBox title="Days Left" value={remainingDays} />
+          <CountBox title= {`${remainingDays[1]}Left`} value={remainingDays[0]} />
           <CountBox title={`Raised of ${state.target}`} value={state.amountCollected} />
           <CountBox title="Total Backers" value={donators.length} />
         </div>
@@ -150,8 +156,8 @@ const RefundDetails = () => {
             <div className="mt-[20px] flex flex-col gap-4">
               {donators.length > 0 ? donators.map((item, index) => (
                 <div key={`${item.donator}-${index}`} className="flex justify-between items-center gap-4">
-                  <p className="font-epilogue font-normal text-[16px] text-black leading-[26px] break-ll">{index + 1}. {item.donator}</p>
-                  <p className="font-epilogue font-normal text-[16px] text-black leading-[26px] break-ll">{item.donation}</p>
+                  {/* <p className="font-epilogue font-normal text-[16px] text-black leading-[26px] break-ll">{index + 1}. {item.donator}</p>
+                  <p className="font-epilogue font-normal text-[16px] text-black leading-[26px] break-ll">{item.donation}</p> */}
                 </div>
               )) : (
                 <p className="font-epilogue font-normal text-[16px] text-black leading-[26px] text-justify">No donators yet. Be the first one!</p>

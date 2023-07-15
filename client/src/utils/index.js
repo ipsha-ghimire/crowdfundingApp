@@ -7,9 +7,12 @@ export const daysLeft = (deadline) => {
     const remainingHours = Math.floor(difference / (1000 * 3600));
     const remainingMinutes = Math.floor((difference % (1000 * 3600)) / (1000 * 60));
     const remainingSeconds = Math.floor((difference % (1000 * 60)) / 1000);
-    return `${remainingHours}:${remainingMinutes}:${remainingSeconds}`;
+    const unit = 'time';
+    
+    return [`${remainingHours}:${remainingMinutes}:${remainingSeconds}`,unit];
   } else {
-    return remainingDays.toFixed(0);
+    const unit = 'days';
+    return [remainingDays.toFixed(0),unit];
   }
 };
 export const calculateBarPercentage = (goal, raisedAmount) => {

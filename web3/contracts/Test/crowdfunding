@@ -1,0 +1,101 @@
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.9;
+
+import "remix_tests.sol";
+import "../contracts/CrowdFunding.sol";
+
+contract CrowdfundingTest {
+    CrowdFunding crowdFunding;
+
+    function beforeEach() public {
+        crowdFunding = new CrowdFunding();
+    }
+
+    function testCreateCampaign() public {
+        uint256 campaignId = crowdFunding.createCampaign(
+            address(this),
+            "Test Campaign",
+            "This is a test campaign",
+            1000,
+            block.timestamp + 86400,
+            "test_image.jpg"
+        );
+
+        CrowdFunding.Campaign memory campaign = crowdFunding.campaigns(campaignId);
+
+        Assert.equal(campaign.owner, address(this), "Incorrect campaign owner");
+        Assert.equal(campaign.title, "Test Campaign", "Incorrect campaign title");
+        Assert.equal(campaign.description, "This is a test campaign", "Incorrect campaign description");
+        Assert.equal(campaign.target, 1000, "Incorrect campaign target");
+        Assert.equal(campaign.deadline, block.timestamp + 86400, "Incorrect campaign deadline");
+        Assert.equal(campaign.amountCollected, 0, "Incorrect campaign amountCollected");
+        Assert.equal(campaign.image, "test_image.jpg", "Incorrect campaign image");
+    }
+
+    function testDonateToCampaign() public payable {
+        uint256 campaignId = crowdFunding.createCampaign(
+            address(this),
+            "Test Campaign",
+            "This is a test campaign",
+            1000,
+            block.timestamp + 86400,
+            "test_image.jpg"
+        );
+        
+        crowdFunding.donateToCampaign{value: 500}(campaignId);
+
+        CrowdFunding.Campaign memory campaign = crowdFunding.campaigns(campaignId);
+        
+        Assert.equal(campaign.donators.length, 1, "Incorrect number of donators");
+        Assert.equal(campaign.donations.length, 1, "Incorrect number of donations");
+        Assert.equal(campaign.amountCollected, 500, "Incorrect campaign amountCollected");
+        Assert.equal(campaign.closed, false, "Campaign should not be closed");
+
+        uint256 userDonation = crowdFunding.donatedAmount(address(this), campaignId);
+        Assert.equal(userDonation, 500, "Incorrect user donation");
+    }
+
+    function testClaimRefund() public payable {
+        uint256 campaignId = crowdFunding.createCampaign(
+            address(this),
+            "Test Campaign",
+            "This is a test campaign",
+            1000,
+            block.timestamp + 86400,
+            "test_image.jpg"
+        );
+
+        crowdFunding.donateToCampaign{value: 500}(campaignId);
+
+        CrowdFunding.Campaign memory campaign = crowdFunding.campaigns(campaignId);
+
+        Assert.equal(campaign.amountCollected, 500, "Incorrect campaign amountCollected");
+
+        crowdFunding.claimRefund(campaignId);
+
+        Assert.equal(campaign.amountCollected, 0, "Campaign amountCollected should be reset");
+        Assert.equal(address(this).balance, 500, "Incorrect contract balance after refund");
+        Assert.equal(crowdFunding.donatedAmount(address(this), campaignId), 0, "User donation should be reset");
+    }
+}
+
+contract TestSuite {
+    CrowdFundingTest crowdFundingTest;
+
+    function beforeAll() public {
+        crowdFundingTest = new CrowdFundingTest();
+        crowdFundingTest.beforeEach();
+    }
+
+    function testCreateCampaign() public {
+        crowdFundingTest.testCreateCampaign();
+    }
+
+    function testDonateToCampaign() public {
+        crowdFundingTest.testDonateToCampaign();
+    }
+
+    function testClaimRefund() public {
+        crowdFundingTest.testClaimRefund();
+    }
+}

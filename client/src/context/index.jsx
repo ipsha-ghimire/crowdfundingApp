@@ -4,6 +4,7 @@ import { useAddress, useContract, useMetamask, useContractWrite } from '@thirdwe
 import { ethers } from 'ethers';
 import { EditionMetadataWithOwnerOutputSchema } from '@thirdweb-dev/sdk';
 import {  daysLeft } from '../utils';
+import { data } from 'autoprefixer';
 
   // const { contract } = useContract('0x6a01e32E41C91B0C44A2ba91bB7B27ee5851161d');
   // const { contract } = useContract('0x4d3CF77f26d15e89857757e32a7A899eF3258d06');
@@ -12,7 +13,7 @@ import {  daysLeft } from '../utils';
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
-  const { contract } = useContract('0xCDe134d06804a842105472E233795723895696ce');
+  const { contract } = useContract('0x3000a5b0ED9556DEF6cB9d3907F9b6Bf56EE6e83');
   const { mutateAsync: createCampaign } = useContractWrite(contract, 'createCampaign');
 
   const address = useAddress();
@@ -116,7 +117,7 @@ export const StateContextProvider = ({ children }) => {
       const remainingDays = daysLeft(campaign.deadline);
   
       if (
-        (remainingDays<0) &&
+        (remainingDays[0]<0) &&
         parseFloat(campaign.amountCollected) < parseFloat(campaign.target) &&
         hasDonated
       ) {
@@ -139,6 +140,12 @@ export const StateContextProvider = ({ children }) => {
    
   }
 
+  const getError = async () => {
+    data= "No refund is avaiable for this you have already collected refund";
+    return data;
+   
+  }
+
 
 
   
@@ -153,7 +160,7 @@ export const StateContextProvider = ({ children }) => {
         getUserCampaigns,
         donate,
         getDonations,
-        getActiveCampaigns,refund,getRefundStatus
+        getActiveCampaigns,refund,getRefundStatus,getError
       }}
     >
       {children}
